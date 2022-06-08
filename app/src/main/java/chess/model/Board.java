@@ -6,21 +6,30 @@ import chess.model.piece.PieceType;
 import chess.view.BoardObserver;
 import javafx.util.Pair;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Board {
     private final Piece[][] board;
     private PieceColour currentTurn;
     private BoardObserver observer;
+    private List<Pair<Integer, Integer>> previousMove;
 
     public Board() {
         this.board = new Piece[8][8];
         this.currentTurn = PieceColour.WHITE;
+        this.previousMove = new ArrayList<>();
+
         loadStartingPosition();
     }
 
     public Piece[][] getBoard() {
         return this.board;
+    }
+
+    public List<Pair<Integer, Integer>> getPreviousMove() {
+        return this.previousMove;
     }
 
     public boolean isCurrentTurn(Piece piece) {
@@ -81,9 +90,8 @@ public class Board {
 
             this.board[newRow][newCol] = this.board[initialRow][initialCol];
             this.board[initialRow][initialCol] = null;
+            this.previousMove = Arrays.asList(new Pair<>(newRow, newCol), new Pair<>(initialRow, initialCol));
             changeTurn();
-
-
         }
     }
 

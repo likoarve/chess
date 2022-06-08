@@ -3,16 +3,16 @@ package chess.view;
 import chess.Controller.Controller;
 import chess.model.Board;
 import chess.model.piece.Piece;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
 import javafx.scene.layout.*;
 import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 import javafx.util.Pair;
 
 import java.util.List;
@@ -44,12 +44,13 @@ public class BoardView implements BoardObserver {
     public void draw() {
         this.board.getChildren().clear();
         drawBoard();
+        drawPreviousMove();
         drawPieces();
     }
 
     public void drawBoard() {
-        Paint darkSquare = Color.rgb(181,136,99);
-        Paint lightSquare = Color.rgb(240,217,181);
+        Paint darkSquare = Color.rgb(170,136,101);
+        Paint lightSquare = Color.rgb(234,217,183);
 
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -71,6 +72,18 @@ public class BoardView implements BoardObserver {
         }
     }
 
+    private void drawPreviousMove() {
+        for (Pair<Integer, Integer> coordinate : model.getPreviousMove()) {
+            Rectangle rec = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.rgb(255,236,68,0.3));
+            rec.setLayoutX(coordinate.getValue() * SQUARE_SIZE);
+            rec.setLayoutY((7 - coordinate.getKey()) * SQUARE_SIZE);
+            rec.setOnMouseDragOver(e -> rec.setId("hoveredByPiece"));
+            rec.setOnMouseDragExited(e -> rec.setId(null));
+
+            this.board.getChildren().add(rec);
+        }
+    }
+
     public void drawPieces() {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -82,6 +95,7 @@ public class BoardView implements BoardObserver {
                             SQUARE_SIZE, SQUARE_SIZE, true, true));
                     pieceView.setLayoutX(SQUARE_SIZE * col);
                     pieceView.setLayoutY(SQUARE_SIZE * row);
+                    pieceView.setOnMouseDragOver(e -> pieceView.setMouseTransparent(true));
 
                     if (model.isCurrentTurn(piece)) {
                         pieceView.setId("activePiece");
@@ -98,7 +112,6 @@ public class BoardView implements BoardObserver {
                         });
 
                         pieceView.setOnDragDetected(e -> pieceView.startFullDrag());
-                        pieceView.setOnMouseDragOver(e -> pieceView.setMouseTransparent(true));
 
                         pieceView.setOnMouseDragged(e -> {
                             pieceView.setTranslateX(e.getSceneX() - startDragX);
@@ -123,13 +136,24 @@ public class BoardView implements BoardObserver {
 
     private void drawLegalMoves(List<Pair<Integer, Integer>> legalMoves) {
         for (Pair<Integer, Integer> coordinate : legalMoves) {
-            Rectangle rec = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.rgb(255,0,0,0.3));
-            rec.setLayoutX(coordinate.getValue() * SQUARE_SIZE);
-            rec.setLayoutY((7 - coordinate.getKey()) * SQUARE_SIZE);
-            rec.setOnMouseDragOver(e -> rec.setId("hoveredByPiece"));
-            rec.setOnMouseDragExited(e -> rec.setId(null));
+            if (model.getBoard()[coordinate.getKey()][coordinate.getValue()] == null) {
+                Circle dot = new Circle(SQUARE_SIZE / 6, Color.rgb(60,60,60,0.3));
+                dot.setLayoutX((coordinate.getValue() + 0.5) * SQUARE_SIZE);
+                dot.setLayoutY((7 - coordinate.getKey() + 0.5) * SQUARE_SIZE);
+                dot.setMouseTransparent(true);
 
-            this.board.getChildren().add(rec);
+                this.board.getChildren().add(dot);
+            } else {
+                Circle dot = new Circle(SQUARE_SIZE / 2, Color.TRANSPARENT);
+                dot.setLayoutX((coordinate.getValue() + 0.5) * SQUARE_SIZE);
+                dot.setLayoutY((7 - coordinate.getKey() + 0.5) * SQUARE_SIZE);
+                dot.setStroke(Color.rgb(60,60,60,0.3));
+                dot.setStrokeType(StrokeType.INSIDE);
+                dot.setStrokeWidth(5);
+                dot.setMouseTransparent(true);
+
+                this.board.getChildren().add(dot);
+            }
         }
     }
 

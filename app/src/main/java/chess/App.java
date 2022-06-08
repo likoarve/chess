@@ -14,6 +14,7 @@ public class App extends Application {
         primaryStage.setTitle("Hello World!");
 
         primaryStage.setScene(new View().getScene());
+        primaryStage.setTitle("Chess");
         primaryStage.show();
     }
 }
