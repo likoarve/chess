@@ -2,8 +2,10 @@
     -fx-background-color: rgb(18,18,18);
 }
 
-#squares {
-    -fx-stroke-width: 0;
+#hoveredByPiece {
+    -fx-stroke: rgba(255,255,255,0.75);
+    -fx-stroke-width: 3;
+    -fx-stroke-type: inside;
 }
 
 #activePiece:hover {

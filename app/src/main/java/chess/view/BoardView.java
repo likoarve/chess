@@ -3,9 +3,11 @@ package chess.view;
 import chess.Controller.Controller;
 import chess.model.Board;
 import chess.model.piece.Piece;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
 import javafx.scene.layout.*;
 import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
@@ -52,9 +54,11 @@ public class BoardView implements BoardObserver {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 Rectangle rectangle = new Rectangle(SQUARE_SIZE, SQUARE_SIZE);
-                rectangle.setId("squares");
                 rectangle.setLayoutX(SQUARE_SIZE * col);
                 rectangle.setLayoutY(SQUARE_SIZE * row);
+
+                rectangle.setOnMouseDragEntered(e -> rectangle.setId("hoveredByPiece"));
+                rectangle.setOnMouseDragExited(e -> rectangle.setId(null));
 
                 if ((row+col) % 2 == 0) {
                     rectangle.setFill(lightSquare);
@@ -83,17 +87,18 @@ public class BoardView implements BoardObserver {
                         pieceView.setId("activePiece");
 
                         pieceView.setOnMousePressed(e -> {
-                            pieceView.toFront();
+                            drawLegalMoves(model.getLegalMoves(7 - gridNumber(pieceView.getLayoutY()),
+                                    gridNumber(pieceView.getLayoutX())));
+
                             startDragX = e.getSceneX() - e.getX() + SQUARE_SIZE / 2;
                             startDragY = e.getSceneY() - e.getY() + SQUARE_SIZE / 2;
-
                             pieceView.setTranslateX(e.getSceneX() - startDragX);
                             pieceView.setTranslateY(e.getSceneY() - startDragY);
-
-                            drawLegalMoves(model.getLegalMoves(
-                                    7 - gridNumber(pieceView.getLayoutY()),
-                                    gridNumber(pieceView.getLayoutX())));
+                            pieceView.toFront();
                         });
+
+                        pieceView.setOnDragDetected(e -> pieceView.startFullDrag());
+                        pieceView.setOnMouseDragOver(e -> pieceView.setMouseTransparent(true));
 
                         pieceView.setOnMouseDragged(e -> {
                             pieceView.setTranslateX(e.getSceneX() - startDragX);
@@ -121,6 +126,8 @@ public class BoardView implements BoardObserver {
             Rectangle rec = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.rgb(255,0,0,0.3));
             rec.setLayoutX(coordinate.getValue() * SQUARE_SIZE);
             rec.setLayoutY((7 - coordinate.getKey()) * SQUARE_SIZE);
+            rec.setOnMouseDragOver(e -> rec.setId("hoveredByPiece"));
+            rec.setOnMouseDragExited(e -> rec.setId(null));
 
             this.board.getChildren().add(rec);
         }
