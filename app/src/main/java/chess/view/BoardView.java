@@ -11,14 +11,15 @@ import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Pair;
+
+import java.util.List;
 
 public class BoardView implements BoardObserver {
     private final static double SQUARE_SIZE = 65;
     private final Board model;
     private final Controller controller;
     private final Pane board;
-
-    private final AudioClip moveSound;
 
     private double startDragX;
     private double startDragY;
@@ -28,8 +29,6 @@ public class BoardView implements BoardObserver {
         this.model = model;
         this.model.attach(this);
         this.controller = controller;
-
-        this.moveSound = new AudioClip(getClass().getResource("/Move.mp3").toExternalForm());
 
         setupBoard();
         draw();
@@ -90,6 +89,10 @@ public class BoardView implements BoardObserver {
 
                             pieceView.setTranslateX(e.getSceneX() - startDragX);
                             pieceView.setTranslateY(e.getSceneY() - startDragY);
+
+                            drawLegalMoves(model.getLegalMoves(
+                                    7 - gridNumber(pieceView.getLayoutY()),
+                                    gridNumber(pieceView.getLayoutX())));
                         });
 
                         pieceView.setOnMouseDragged(e -> {
@@ -113,6 +116,16 @@ public class BoardView implements BoardObserver {
         }
     }
 
+    private void drawLegalMoves(List<Pair<Integer, Integer>> legalMoves) {
+        for (Pair<Integer, Integer> coordinate : legalMoves) {
+            Rectangle rec = new Rectangle(SQUARE_SIZE, SQUARE_SIZE, Color.rgb(255,0,0,0.3));
+            rec.setLayoutX(coordinate.getValue() * SQUARE_SIZE);
+            rec.setLayoutY((7 - coordinate.getKey()) * SQUARE_SIZE);
+
+            this.board.getChildren().add(rec);
+        }
+    }
+
     public Pane getBoard() {
         return this.board;
     }
@@ -122,7 +135,8 @@ public class BoardView implements BoardObserver {
     }
 
     @Override
-    public void update() {
-        this.moveSound.play();
+    public void update(String sfx) {
+        String filename = String.format("/%s.mp3", sfx);
+        new AudioClip(getClass().getResource(filename).toExternalForm()).play();
     }
 }

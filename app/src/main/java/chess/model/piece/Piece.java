@@ -1,5 +1,7 @@
 package chess.model.piece;
 
+import chess.model.piece.legal_move.LegalMoveStrategy;
+
 public class Piece {
     private final PieceType type;
     private final PieceColour colour;
@@ -13,6 +15,10 @@ public class Piece {
         return colour;
     }
 
+    public LegalMoveStrategy getLegalMoveStrategy() {
+        return this.type.getLegalMoveStrategy();
+    }
+
     public String toURI() {
         return String.format("/%s_%s.png", colour.toString(), type.toString()).toLowerCase();
     }
@@ -20,8 +26,8 @@ public class Piece {
     public boolean isDifferentColour(Piece other) {
         if (other == null) {
             return false;
+        } else {
+            return this.getColour() != other.getColour();
         }
-
-        return this.getColour() != other.getColour();
     }
 }

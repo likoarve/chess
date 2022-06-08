@@ -55,6 +55,14 @@ public class Board {
         }
     }
 
+    public List<Pair<Integer, Integer>> getLegalMoves(int row, int col) {
+        if (board[row][col] == null) {
+            throw new IllegalArgumentException("Empty Square.");
+        }
+
+        return board[row][col].getLegalMoveStrategy().getLegalMoves(board, row, col);
+    }
+
     public void makeMove(int initialRow, int initialCol, int newRow, int newCol) {
         if (initialRow == newRow && initialCol == newCol) {
             return;
@@ -64,11 +72,19 @@ public class Board {
             return;
         }
 
-        this.board[newRow][newCol] = this.board[initialRow][initialCol];
-        this.board[initialRow][initialCol] = null;
-        changeTurn();
+        if (getLegalMoves(initialRow, initialCol).contains(new Pair<>(newRow, newCol))) {
+            if (this.board[newRow][newCol] == null) {
+                this.observer.update("Move");
+            } else {
+                this.observer.update("Capture");
+            }
 
-        this.observer.update();
+            this.board[newRow][newCol] = this.board[initialRow][initialCol];
+            this.board[initialRow][initialCol] = null;
+            changeTurn();
+
+
+        }
     }
 
     public void changeTurn() {

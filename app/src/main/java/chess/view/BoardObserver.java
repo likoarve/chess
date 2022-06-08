@@ -1,5 +1,5 @@
 package chess.view;
 
 public interface BoardObserver {
-    void update();
+    void update(String sfx);
 }
