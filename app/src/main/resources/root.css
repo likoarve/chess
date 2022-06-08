@@ -1,0 +1,11 @@
+.root {
+    -fx-background-color: rgb(18,18,18);
+}
+
+#squares {
+    -fx-stroke-width: 0;
+}
+
+#activePiece:hover {
+    -fx-cursor: hand;
+}
