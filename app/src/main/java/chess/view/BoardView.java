@@ -14,7 +14,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.util.Pair;
-
 import java.util.List;
 
 public class BoardView implements BoardObserver {
@@ -95,6 +94,7 @@ public class BoardView implements BoardObserver {
                             SQUARE_SIZE, SQUARE_SIZE, true, true));
                     pieceView.setLayoutX(SQUARE_SIZE * col);
                     pieceView.setLayoutY(SQUARE_SIZE * row);
+                    pieceView.setPickOnBounds(true);
                     pieceView.setOnMouseDragOver(e -> pieceView.setMouseTransparent(true));
 
                     if (model.isCurrentTurn(piece)) {

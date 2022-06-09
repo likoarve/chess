@@ -11,8 +11,6 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Hello World!");
-
         primaryStage.setScene(new View().getScene());
         primaryStage.setTitle("Chess");
         primaryStage.show();
